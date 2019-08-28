@@ -1,4 +1,5 @@
-﻿@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");
+﻿/*@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");*/
+@import url("../lib/webgl-tutorials.css");
 body {
   margin: 0;
 }

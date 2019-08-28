@@ -2,21 +2,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WebGL 基础概念-01</title>
+    <title>WebGL 基础概念-02</title>
     <link href="./01Fundamentals-01.css" rel="stylesheet" />
 </head>
 <body>
     <canvas id="c"></canvas>
     <script id="2d-vertex-shader" type="notjs">
         // an attribute will receive data from a buffer
-        attribute vec4 a_position;
+        attribute vec2 a_position;
+        uniform vec2 u_resolution;
 
         // all shaders have a main function
         void main() {
+           // 从像素坐标转换到 0.0 到 1.0
+           vec2 zeroToOne = a_position / u_resolution;
 
-        // gl_Position is a special variable a vertex shader
-        // is responsible for setting
-        gl_Position = a_position;
+           // 再把 0->1 转换 0->2
+           vec2 zeroToTwo = zeroToOne * 2.0;
+
+           // 把 0->2 转换到 -1->+1 (裁剪空间)
+           vec2 clipSpace = zeroToTwo - 1.0;
+
+           //gl_Position = vec4(clipSpace, 0, 1);
+           gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);//翻转y轴 
         }
 
     </script>
@@ -44,6 +52,6 @@
     -->
     <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
     <script src="../lib/webgl-utils.js"></script>
-    <script src="./01Fundamentals-01.js"></script>
+    <script src="./01Fundamentals-02.js"></script>
 </body>
 </html>
