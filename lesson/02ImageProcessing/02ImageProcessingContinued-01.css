@@ -1,0 +1,30 @@
+﻿/*@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");*/
+@import url("../lib/webgl-tutorials.css");
+body {
+  margin: 0;
+}
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+#ui {
+  font-size: x-small;
+}
+table {
+  border-collapse: collapse;
+}
+.tDnD_whileDrag {
+  background-color: #daf !important;
+}
+tr:nth-child(odd) {
+  background-color: #eee;
+}
+tr:nth-child(even) {
+  background-color: #def;
+}
+td {
+  border-width: 0px;
+  padding: 0px;
+  margin: 0px;
+}
