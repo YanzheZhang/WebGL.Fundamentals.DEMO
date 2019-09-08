@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebGL 二维平移-02</title>
+    <link href="./012DTranslation-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="uiContainer">
+        <div id="ui">
+            <div id="x"></div>
+            <div id="y"></div>
+        </div>
+    </div>
+    <!-- vertex shader -->
+    <script id="2d-vertex-shader1" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+        uniform vec2 u_resolution;
+        uniform vec2 u_translation;
+        void main() {
+        vec2 position = a_position + u_translation;
+        vec2 zeroToOne = a_position / u_resolution;
+        vec2 zeroToTwo = zeroToOne * 2.0;
+        vec2 clipSpace = zeroToTwo - 1.0;
+        gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+        }
+    </script>
+
+    <!-- fragment shader -->
+    <script id="2d-fragment-shader1" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec4 u_color;
+        void main() {
+        gl_FragColor = u_color;
+        }
+    </script>
+    <!-- vertex shader -->
+    <script id="2d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+        uniform vec2 u_resolution;
+        uniform vec2 u_translation;
+        void main() {
+        vec2 position = a_position + u_translation;
+        vec2 zeroToOne = position / u_resolution;
+        vec2 zeroToTwo = zeroToOne * 2.0;
+        vec2 clipSpace = zeroToTwo - 1.0;
+        gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="2d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform vec4 u_color;
+        void main() {
+        gl_FragColor = u_color;
+        }
+    </script>
+
+    <!--
+    for most samples webgl-utils only provides shader compiling/linking and
+    canvas resizing because why clutter the examples with code that's the same in every sample.
+    See http://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+    and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    for webgl-utils, m3, m4, and webgl-lessons-ui.
+    -->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>-->
+    <script src="../lib/webgl-lessons-ui.js"></script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="./012DTranslation-02.js"></script>
+</body>
+</html>
