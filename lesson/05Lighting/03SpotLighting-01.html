@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebGL 三维聚光灯-01</title>
+    <link href="./03SpotLighting-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="uiContainer">
+        <div id="ui">
+            <div id="fRotation"></div>
+            <div id="lightRotationX"></div>
+            <div id="lightRotationY"></div>
+            <div id="limit"></div>
+        </div>
+    </div>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec3 a_normal;
+
+        uniform vec3 u_lightWorldPosition;
+        uniform vec3 u_viewWorldPosition;
+
+        uniform mat4 u_world;
+        uniform mat4 u_worldViewProjection;
+        uniform mat4 u_worldInverseTranspose;
+
+        varying vec3 v_normal;
+
+        varying vec3 v_surfaceToLight;
+        varying vec3 v_surfaceToView;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_worldViewProjection * a_position;
+
+        // orient the normals and pass to the fragment shader
+        v_normal = mat3(u_worldInverseTranspose) * a_normal;
+
+        // compute the world position of the surfoace
+        vec3 surfaceWorldPosition = (u_world * a_position).xyz;
+
+        // compute the vector of the surface to the light
+        // and pass it to the fragment shader
+        v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+
+        // compute the vector of the surface to the view/camera
+        // and pass it to the fragment shader
+        v_surfaceToView = u_viewWorldPosition - surfaceWorldPosition;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // 从顶点着色器传入的值
+        varying vec3 v_normal;
+        varying vec3 v_surfaceToLight;
+        varying vec3 v_surfaceToView;
+
+        uniform vec4 u_color;
+        uniform float u_shininess;
+        uniform vec3 u_lightDirection;
+        uniform float u_limit;          // 在点乘空间中
+
+        void main() {
+        // 因为 v_normal 是可变量，被插值过
+        // 所以不是单位向量，单位可以让它成为再次成为单位向量
+        vec3 normal = normalize(v_normal);
+
+        vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+        vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+        vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+
+        float light = 0.0;
+        float specular = 0.0;
+        float dotFromDirection = dot(surfaceToLightDirection,-u_lightDirection);
+        if (dotFromDirection >= u_limit) {
+        light = dot(normal, surfaceToLightDirection);
+        // 使用光照
+        if (light > 0.0) {
+        specular = pow(dot(normal, halfVector), u_shininess);
+        }
+        }
+
+        gl_FragColor = u_color;
+
+        // 只将颜色部分（不包含 alpha） 和光照相乘
+        gl_FragColor.rgb *= light;
+
+        // 直接加上高光
+        gl_FragColor.rgb += specular;
+        }
+    </script>
+    <!--
+    for most samples webgl-utils only provides shader compiling/linking and
+    canvas resizing because why clutter the examples with code that's the same in every sample.
+    See http://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+    and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    for webgl-utils, m3, m4, and webgl-lessons-ui.
+    -->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>-->
+    <script src="../lib/webgl-lessons-ui.js"></script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./03SpotLighting-01.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebGL 三维点光源-04</title>
+    <link href="./02PointLighting-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="uiContainer">
+        <div id="ui">
+            <div id="fRotation"></div>
+            <div id="shininess"></div>
+        </div>
+    </div>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec3 a_normal;
+
+        uniform vec3 u_lightWorldPosition;
+        uniform vec3 u_viewWorldPosition;
+
+        uniform mat4 u_world;
+        uniform mat4 u_worldViewProjection;
+        uniform mat4 u_worldInverseTranspose;
+
+        varying vec3 v_normal;
+
+        varying vec3 v_surfaceToLight;
+        varying vec3 v_surfaceToView;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_worldViewProjection * a_position;
+
+        // orient the normals and pass to the fragment shader
+        v_normal = mat3(u_worldInverseTranspose) * a_normal;
+
+        // compute the world position of the surface
+        vec3 surfaceWorldPosition = (u_world * a_position).xyz;
+
+        // compute the vector of the surface to the light
+        // and pass it to the fragment shader
+        v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+
+        // compute the vector of the surface to the view/camera
+        // and pass it to the fragment shader
+        v_surfaceToView = u_viewWorldPosition - surfaceWorldPosition;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Passed in from the vertex shader.
+        varying vec3 v_normal;
+        varying vec3 v_surfaceToLight;
+        varying vec3 v_surfaceToView;
+
+        uniform vec4 u_color;
+        uniform float u_shininess;
+        uniform vec3 u_lightColor;
+        uniform vec3 u_specularColor;
+
+        void main() {
+        // because v_normal is a varying it's interpolated
+        // so it will not be a unit vector. Normalizing it
+        // will make it a unit vector again
+        vec3 normal = normalize(v_normal);
+
+        vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+        vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+        vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
+
+        float light = dot(normal, surfaceToLightDirection);
+        float specular = 0.0;
+        if (light > 0.0) {
+        //点乘结果有可能为负值，将赋值求幂有可能会得到 undefined 的结果， 所以我们只将点乘结果为正的部分进行计算，其他部分设置为 0.0。
+        specular = pow(dot(normal, halfVector), u_shininess);
+        }
+
+        gl_FragColor = u_color;
+
+        // Lets multiply just the color portion (not the alpha)
+        // by the light
+       // gl_FragColor.rgb *= light;
+        gl_FragColor.rgb *= light * u_lightColor;
+
+        // Just add in the specular
+        //gl_FragColor.rgb += specular;
+        gl_FragColor.rgb += specular * u_specularColor;
+        }
+    </script>
+    <!--
+    for most samples webgl-utils only provides shader compiling/linking and
+    canvas resizing because why clutter the examples with code that's the same in every sample.
+    See http://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+    and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    for webgl-utils, m3, m4, and webgl-lessons-ui.
+    -->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>-->
+    <script src="../lib/webgl-lessons-ui.js"></script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./02PointLighting-04.js"></script>
+</body>
+</html>
