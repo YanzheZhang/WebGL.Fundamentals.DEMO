@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebGL 三维纹理-03</title>
+    <link href="./01Textures-03.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        <div id="gridContainer">
+            <svg version="1.1"
+                 id="grid"
+                 viewBox="-50 -50 400 300"
+                 fill="none"
+                 stroke="none"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g transform="matrix(1, 0, 0, 1, 0, 0)">
+                    <g stroke-width="0.25" stroke="#000000">
+                        <line x1="0" y1="80" x2="0" y2="85" />
+                        <line x1="16" y1="80" x2="16" y2="85" />
+                        <line x1="32" y1="80" x2="32" y2="85" />
+                        <line x1="48" y1="80" x2="48" y2="85" />
+                        <line x1="64" y1="80" x2="64" y2="85" />
+                        <line x1="80" y1="80" x2="80" y2="85" />
+
+                        <line y1="0" x1="85" y2="0" x2="80" />
+                        <line y1="16" x1="85" y2="16" x2="80" />
+                        <line y1="32" x1="85" y2="32" x2="80" />
+                        <line y1="48" x1="85" y2="48" x2="80" />
+                        <line y1="64" x1="85" y2="64" x2="80" />
+                        <line y1="80" x1="85" y2="80" x2="80" />
+                    </g>
+                    <g fill="#000000" font-size="5" font-family="monospace" text-anchor="middle">
+                        <text x="0" y="90">-3</text>
+                        <text x="16" y="90">-2</text>
+                        <text x="32" y="90">-1</text>
+                        <text x="48" y="90">0</text>
+                        <text x="64" y="90">1</text>
+                        <text x="80" y="90">2</text>
+                        <text y="1" x="90">4</text>
+                        <text y="17" x="90">3</text>
+                        <text y="33" x="90">2</text>
+                        <text y="49" x="90">1</text>
+                        <text y="65" x="90">0</text>
+                        <text y="81" x="90">-1</text>
+                    </g>
+                </g>
+            </svg>
+        </div>
+        <div id="uiContainer">
+            <div id="ui">
+                <div id="wrap_s">
+                    <div>TEXTURE_WRAP_S: </div>
+                    <div><input type="radio" id="wrap_s0" name="wrap_s" checked="true" /><label for="wrap_s0">REPEAT</label></div>
+                    <div><input type="radio" id="wrap_s1" name="wrap_s" /><label for="wrap_s1">CLAMP_TO_EDGE</label></div>
+                    <div><input type="radio" id="wrap_s2" name="wrap_s" /><label for="wrap_s2">MIRRORED_REPEAT</label></div>
+                </div>
+                <div id="wrap_t">
+                    <div><span>TEXTURE_WRAP_T: </span></div>
+                    <div><input type="radio" id="wrap_t0" name="wrap_t" checked="true" /><label for="wrap_t0">REPEAT</label></div>
+                    <div><input type="radio" id="wrap_t1" name="wrap_t" /><label for="wrap_t1">CLAMP_TO_EDGE</label></div>
+                    <div><input type="radio" id="wrap_t2" name="wrap_t" /><label for="wrap_t2">MIRRORED_REPEAT</label></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec2 a_texcoord;
+
+        uniform mat4 u_matrix;
+
+        varying vec2 v_texcoord;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_matrix * a_position;
+
+        // Pass the texcoord to the fragment shader.
+        v_texcoord = a_texcoord;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Passed in from the vertex shader.
+        varying vec2 v_texcoord;
+
+        // The texture.
+        uniform sampler2D u_texture;
+
+        void main() {
+        gl_FragColor = texture2D(u_texture, v_texcoord);
+        }
+    </script>
+    <!--
+    for most samples webgl-utils only provides shader compiling/linking and
+    canvas resizing because why clutter the examples with code that's the same in every sample.
+    See http://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+    and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    for webgl-utils, m3, m4, and webgl-lessons-ui.
+    -->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>-->
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./01Textures-03.js"></script>
+</body>
+</html>

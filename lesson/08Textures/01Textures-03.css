@@ -1,0 +1,56 @@
+﻿/*@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");*/
+@import url("../lib/webgl-tutorials.css");
+body {
+  margin: 0;
+}
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+#ui {
+  width: 380px;
+  padding: 0.25em;
+  font-size: small;
+}
+body, document {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -ms-user-select: none;
+}
+#gridContainer {
+  position: absolute;
+  z-index: 2;
+  top: 1px;
+  left: 1px;
+  width: 400px;
+  height: 300px;
+}
+#gridContainer>svg {
+  width: 100%;
+  height: 100%;
+}
+#uiContainer {
+  left: 15px;
+  top: 15px;
+}
+#ui>div {
+  margin-bottom: 1em;
+}
+#container {
+  position: relative;
+  /*
+  not sure why but on mobile webkit the gridContainer
+  is initially set to a large size after which
+  it never shrinks because it's holding the page to at
+  least that size.
+  
+  This was one fix though not really understanding the original
+  issue
+  */
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
