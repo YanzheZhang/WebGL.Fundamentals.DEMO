@@ -2,30 +2,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Planar and Perspective Projection Mapping-01</title>
+    <title>WebGL 纹理映射的透视纠正-05</title>
     <link href="./02DataTextures-01.css" rel="stylesheet" />
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <div id="uiContainer">
-        <div id="ui">
-        </div>
-    </div>
     <!-- vertex shader -->
     <script id="3d-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 a_position;
         attribute vec2 a_texcoord;
 
-        uniform mat4 u_projection;
-        uniform mat4 u_view;
-        uniform mat4 u_world;
+        uniform mat4 u_matrix;
 
         varying vec2 v_texcoord;
 
         void main() {
-        gl_Position = u_projection * u_view * u_world * a_position;
+        // Multiply the position by the matrix.
+        gl_Position = u_matrix * a_position;
 
-        // Pass the texture coord to the fragment shader.
+        // Pass the texcoord to the fragment shader.
         v_texcoord = a_texcoord;
         }
     </script>
@@ -36,11 +31,11 @@
         // Passed in from the vertex shader.
         varying vec2 v_texcoord;
 
-        uniform vec4 u_colorMult;
+        // The texture.
         uniform sampler2D u_texture;
 
         void main() {
-        gl_FragColor = texture2D(u_texture, v_texcoord) * u_colorMult;
+        gl_FragColor = texture2D(u_texture, v_texcoord);
         }
     </script>
     <!--
@@ -50,14 +45,9 @@
     and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
     for webgl-utils, m3, m4, and webgl-lessons-ui.
     -->
-    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
-    <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
-    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>
-    <script src="https://webglfundamentals.org/webgl/resources/primitives.js"></script>-->
-    <script src="../lib/webgl-lessons-ui.js"></script>
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
     <script src="../lib/webgl-utils.js"></script>
     <script src="../lib/m4.js"></script>
-    <script src="../lib/primitives.js"></script>
-    <script src="./06PlanarandPerspectiveProjectionMapping-01.js"></script>
+    <script src="./05PerspectiveCorrectTextureMapping-05.js"></script>
 </body>
 </html>

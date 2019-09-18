@@ -2,35 +2,34 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WebGL 纹理映射的透视纠正-01</title>
+    <title>WebGL 纹理映射的透视纠正-04</title>
     <link href="./02DataTextures-01.css" rel="stylesheet" />
 </head>
 <body>
     <canvas id="c"></canvas>
     <script id="2d-vertex-shader" type="notjs">
 
-        // an attribute will receive data from a buffer
         attribute vec4 a_position;
+        attribute float a_brightness;
 
-        // all shaders have a main function
+        varying float v_brightness;
+
         void main() {
-
-        // gl_Position is a special variable a vertex shader
-        // is responsible for setting
         gl_Position = a_position;
+
+        // just pass the brightness on to the fragment shader
+        v_brightness = a_brightness;
         }
 
     </script>
     <script id="2d-fragment-shader" type="notjs">
-
-        // fragment shaders don't have a default precision so we need
-        // to pick one. mediump is a good default
         precision mediump float;
 
+        varying float v_brightness;
+
         void main() {
-        // gl_FragColor is a special variable a fragment shader
-        // is responsible for setting
-        gl_FragColor = vec4(1, 0, 0.5, 1); // return redish-purple
+        //fract 会保留小数部分所以结果还是 0 到 1之间
+        gl_FragColor = vec4(fract(v_brightness * 10.), 0, 0, 1);  // reds
         }
 
     </script>
@@ -44,6 +43,6 @@
     <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
     <script src="../lib/webgl-utils.js"></script>
     <!--<script src="../lib/m4.js"></script>-->
-    <script src="./05PerspectiveCorrectTextureMapping-01.js"></script>
+    <script src="./05PerspectiveCorrectTextureMapping-04.js"></script>
 </body>
 </html>

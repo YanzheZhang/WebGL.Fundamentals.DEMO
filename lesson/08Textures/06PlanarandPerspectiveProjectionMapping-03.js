@@ -9,9 +9,9 @@ function main() {
         return;
     }
 
-    // setup GLSL program
-    // compiles shader, links program, look up locations
+    // setup GLSL programs
     const textureProgramInfo = webglUtils.createProgramInfo(gl, ['3d-vertex-shader', '3d-fragment-shader']);
+    const colorProgramInfo = webglUtils.createProgramInfo(gl, ['color-vertex-shader', 'color-fragment-shader']);
 
     const sphereBufferInfo = primitives.createSphereBufferInfo(
         gl,
@@ -26,6 +26,34 @@ function main() {
         1,   // subdivisions across
         1,   // subdivisions down
     );
+    const cubeLinesBufferInfo = webglUtils.createBufferInfoFromArrays(gl, {
+        position: [
+           0,  0, -1,
+           1,  0, -1,
+           0,  1, -1,
+           1,  1, -1,
+           0,  0,  1,
+           1,  0,  1,
+           0,  1,  1,
+           1,  1,  1,
+        ],
+        indices: [
+          0, 1,
+          1, 3,
+          3, 2,
+          2, 0,
+
+          4, 5,
+          5, 7,
+          7, 6,
+          6, 4,
+
+          0, 4,
+          1, 5,
+          3, 7,
+          2, 6,
+        ],
+    });
 
     // make a 8x8 checkerboard texture
     const checkerboardTexture = gl.createTexture();
@@ -52,6 +80,29 @@ function main() {
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
+    function loadImageTexture(url) {
+        // Create a texture.
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        // Fill the texture with a 1x1 blue pixel.
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+                      new Uint8Array([0, 0, 255, 255]));
+        // Asynchronously load an image
+        const image = new Image();
+        image.src = url;
+        image.addEventListener('load', function() {
+            // Now that the image has loaded make copy it to the texture.
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+            // assumes this texture is a power of 2
+            gl.generateMipmap(gl.TEXTURE_2D);
+            render();
+        });
+        return texture;
+    }
+
+    const imageTexture = loadImageTexture('../data/img/f-texture.png');  
+
     function degToRad(d) {
         return d * Math.PI / 180;
     }
@@ -59,10 +110,26 @@ function main() {
     const settings = {
         cameraX: 2.75,
         cameraY: 5,
+        posX: 3.5,
+        posY: 4.4,
+        posZ: 4.7,
+        targetX: 0.8,
+        targetY: 0,
+        targetZ: 4.7,
+        projWidth: 1,
+        projHeight: 1,
     };
     webglLessonsUI.setupUI(document.querySelector('#ui'), settings, [
       { type: 'slider',   key: 'cameraX',    min: -10, max: 10, change: render, precision: 2, step: 0.001, },
       { type: 'slider',   key: 'cameraY',    min:   1, max: 20, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'posX',       min: -10, max: 10, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'posY',       min:   1, max: 20, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'posZ',       min:   1, max: 20, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'targetX',    min: -10, max: 10, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'targetY',    min:   0, max: 20, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'targetZ',    min: -10, max: 20, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'projWidth',  min:   0, max: 10, change: render, precision: 2, step: 0.001, },
+      { type: 'slider',   key: 'projHeight', min:   0, max: 10, change: render, precision: 2, step: 0.001, },
     ]);
 
     const fieldOfViewRadians = degToRad(60);
@@ -83,12 +150,29 @@ function main() {
         // Make a view matrix from the camera matrix.
         const viewMatrix = m4.inverse(cameraMatrix);
 
+        let textureWorldMatrix = m4.lookAt(
+            [settings.posX, settings.posY, settings.posZ],          // position
+            [settings.targetX, settings.targetY, settings.targetZ], // target
+            [0, 1, 0],                                              // up
+        );
+        textureWorldMatrix = m4.scale(
+            textureWorldMatrix,
+            settings.projWidth, settings.projHeight, 1,
+        );
+
+        // use the inverse of this world matrix to make
+        // a matrix that will transform other positions
+        // to be relative this this world space.
+        const textureMatrix = m4.inverse(textureWorldMatrix);
+
         gl.useProgram(textureProgramInfo.program);
 
-        // Set the uniform that both the sphere and the plane share
+        // set uniforms that are the same for both the sphere and plane
         webglUtils.setUniforms(textureProgramInfo, {
             u_view: viewMatrix,
             u_projection: projectionMatrix,
+            u_textureMatrix: textureMatrix,
+            u_projectedTexture: imageTexture,
         });
 
         // ------ Draw the sphere --------
@@ -107,13 +191,37 @@ function main() {
         // Setup all the needed attributes.
         webglUtils.setBuffersAndAttributes(gl, textureProgramInfo, planeBufferInfo);
 
-        // Set the uniforms unique to the plane
+        // Set the uniforms we just computed
         webglUtils.setUniforms(textureProgramInfo, planeUniforms);
 
         // calls gl.drawArrays or gl.drawElements
         webglUtils.drawBufferInfo(gl, planeBufferInfo);
+
+        // ------ Draw the cube ------
+
+        gl.useProgram(colorProgramInfo.program);
+
+        // Setup all the needed attributes.
+        webglUtils.setBuffersAndAttributes(gl, colorProgramInfo, cubeLinesBufferInfo);
+
+        // scale the cube in Z so it's really long
+        // to represent the texture is being projected to
+        // infinity
+        const mat = m4.scale(textureWorldMatrix, 1, 1, 1000);
+
+        // Set the uniforms we just computed
+        webglUtils.setUniforms(colorProgramInfo, {
+            u_color: [0, 0, 0, 1],
+            u_view: viewMatrix,
+            u_projection: projectionMatrix,
+            u_world: mat,
+        });
+
+        // calls gl.drawArrays or gl.drawElements
+        webglUtils.drawBufferInfo(gl, cubeLinesBufferInfo, gl.LINES);
     }
 
+    // Draw the scene.
     function render() {
         webglUtils.resizeCanvasToDisplaySize(gl.canvas);
 
@@ -133,7 +241,7 @@ function main() {
 
         // Compute the camera's matrix using look at.
         const cameraPosition = [settings.cameraX, settings.cameraY, 7];
-        const target = [0, 0, 0];//看向0 0 0
+        const target = [0, 0, 0];
         const up = [0, 1, 0];
         const cameraMatrix = m4.lookAt(cameraPosition, target, up);
 

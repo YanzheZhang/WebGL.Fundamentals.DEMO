@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Planar and Perspective Projection Mapping-01</title>
+    <title>Planar and Perspective Projection Mapping-02</title>
     <link href="./02DataTextures-01.css" rel="stylesheet" />
 </head>
 <body>
@@ -19,14 +19,21 @@
         uniform mat4 u_projection;
         uniform mat4 u_view;
         uniform mat4 u_world;
+        uniform mat4 u_textureMatrix;
 
         varying vec2 v_texcoord;
+        varying vec4 v_projectedTexcoord;
 
         void main() {
-        gl_Position = u_projection * u_view * u_world * a_position;
+        // Multiply the position by the matrix.
+        vec4 worldPosition = u_world * a_position;
+
+        gl_Position = u_projection * u_view * worldPosition;
 
         // Pass the texture coord to the fragment shader.
         v_texcoord = a_texcoord;
+
+        v_projectedTexcoord = u_textureMatrix * worldPosition;
         }
     </script>
     <!-- fragment shader -->
@@ -35,12 +42,27 @@
 
         // Passed in from the vertex shader.
         varying vec2 v_texcoord;
+        varying vec4 v_projectedTexcoord;
 
         uniform vec4 u_colorMult;
         uniform sampler2D u_texture;
+        uniform sampler2D u_projectedTexture;
 
         void main() {
-        gl_FragColor = texture2D(u_texture, v_texcoord) * u_colorMult;
+        // divide by w to get the correct value. See article on perspective
+        vec3 projectedTexcoord = v_projectedTexcoord.xyz / v_projectedTexcoord.w;
+
+        bool inRange =
+        projectedTexcoord.x >= 0.0 &&
+        projectedTexcoord.x <= 1.0 &&
+        projectedTexcoord.y >= 0.0 &&
+        projectedTexcoord.y <= 1.0;
+
+        vec4 projectedTexColor = texture2D(u_projectedTexture, projectedTexcoord.xy);
+        vec4 texColor = texture2D(u_texture, v_texcoord) * u_colorMult;
+
+        float projectedAmount = inRange ? 1.0 : 0.0;
+        gl_FragColor = mix(texColor, projectedTexColor, projectedAmount);
         }
     </script>
     <!--
@@ -58,6 +80,6 @@
     <script src="../lib/webgl-utils.js"></script>
     <script src="../lib/m4.js"></script>
     <script src="../lib/primitives.js"></script>
-    <script src="./06PlanarandPerspectiveProjectionMapping-01.js"></script>
+    <script src="./06PlanarandPerspectiveProjectionMapping-02.js"></script>
 </body>
 </html>
