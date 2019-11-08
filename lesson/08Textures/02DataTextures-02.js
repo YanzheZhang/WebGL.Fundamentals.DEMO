@@ -40,14 +40,18 @@ function main() {
     // fill texture with 3x2 pixels
     const level = 0;
     const internalFormat = gl.LUMINANCE;
-    const width = 3;
+    const width = 2;
     const height = 2;
     const border = 0;
     const format = gl.LUMINANCE;//单通道 1字节
     const type = gl.UNSIGNED_BYTE;
+    //const data = new Uint8Array([
+    //  128, 64, 128,
+    //    0, 192, 0,
+    //]);
     const data = new Uint8Array([
-      128, 64, 128,
-        0, 192, 0,
+     128, 64, 
+       0, 192,
     ]);
     const alignment = 1;
     /*
@@ -68,8 +72,8 @@ function main() {
     // 设置筛选器，我们不需要使用贴图所以就不用筛选器了
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//三类：REPEAT  CLAMP_TO_EDGE  MIRRORED_REPEAT
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);//三类：REPEAT  CLAMP_TO_EDGE  MIRRORED_REPEAT
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
     function degToRad(d) {
         return d * Math.PI / 180;
@@ -224,53 +228,53 @@ function setGeometry(gl) {
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 }
 
-// Fill the buffer with texture coordinates the cube.
+
 function setTexcoords(gl) {
     gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(
           [
             0, 0,
-            0, 1,
-            1, 0,
-            0, 1,
-            1, 1,
-            1, 0,
+            0, 4,
+            4, 0,
+            0, 4,
+            4, 4,
+            4, 0,
 
             0, 0,
-            0, 1,
-            1, 0,
-            1, 0,
-            0, 1,
-            1, 1,
+            0, 4,
+            4, 0,
+            4, 0,
+            0, 4,
+            4, 4,
 
             0, 0,
-            0, 1,
-            1, 0,
-            0, 1,
-            1, 1,
-            1, 0,
+            0, 4,
+            4, 0,
+            0, 4,
+            4, 4,
+            4, 0,
 
             0, 0,
-            0, 1,
-            1, 0,
-            1, 0,
-            0, 1,
-            1, 1,
+            0, 4,
+            4, 0,
+            4, 0,
+            0, 4,
+            4, 4,
 
             0, 0,
-            0, 1,
-            1, 0,
-            0, 1,
-            1, 1,
-            1, 0,
+            0, 4,
+            4, 0,
+            0, 4,
+            4, 4,
+            4, 0,
 
             0, 0,
-            0, 1,
-            1, 0,
-            1, 0,
-            0, 1,
-            1, 1,
+            0, 4,
+            4, 0,
+            4, 0,
+            0, 4,
+            4, 4,
 
           ]),
         gl.STATIC_DRAW);

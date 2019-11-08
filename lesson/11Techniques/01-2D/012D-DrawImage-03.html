@@ -1,40 +1,31 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WebGL 纹理映射的透视纠正-06</title>
-    <link href="./02DataTextures-01.css" rel="stylesheet" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebGL 二维DrawImage-03</title>
+    <link href="./012D-DrawImage-01.css" rel="stylesheet" />
 </head>
 <body>
     <canvas id="canvas"></canvas>
     <!-- vertex shader -->
-    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+    <script id="drawImage-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 a_position;
         attribute vec2 a_texcoord;
 
         uniform mat4 u_matrix;
-
+        uniform mat4 u_textureMatrix;
         varying vec2 v_texcoord;
 
         void main() {
-        // 将位置和矩阵相乘
         gl_Position = u_matrix * a_position;
-
-        // 手工除以 W   除以 W 意味值 gl_Position.w 始终为 1，X, Y, 和 Z 不会有什么影响，因为WebGL也会默认做除法
-        gl_Position /= gl_Position.w;
-
-        // 将纹理坐标传到片断着色器
-        v_texcoord = a_texcoord;
+        v_texcoord = (u_textureMatrix * vec4(a_texcoord, 0, 1)).xy;
         }
     </script>
-    <!-- fragment shader -->
-    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+    <script id="drawImage-fragment-shader" type="x-shader/x-fragment">
         precision mediump float;
 
-        // Passed in from the vertex shader.
         varying vec2 v_texcoord;
 
-        // The texture.
         uniform sampler2D u_texture;
 
         void main() {
@@ -49,8 +40,9 @@
     for webgl-utils, m3, m4, and webgl-lessons-ui.
     -->
     <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
-    <script src="../lib/webgl-utils.js"></script>
-    <script src="../lib/m4.js"></script>
-    <script src="./05PerspectiveCorrectTextureMapping-06.js"></script>
+    <!--<script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>-->
+    <script src="../../lib/webgl-utils.js"></script>
+    <script src="../../lib/m4.js"></script>
+    <script src="./012D-DrawImage-03.js"></script>
 </body>
 </html>

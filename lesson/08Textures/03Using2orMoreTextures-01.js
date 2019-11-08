@@ -13,9 +13,11 @@ function loadImages(urls, callback) {
 
     // Called each time an image finished
     // loading.
+    //每个图像加载完成后调用一次
     var onImageLoad = function () {
         --imagesToLoad;
         // If all the images are loaded call the callback.
+        // 如果所有图像都加载完成就调用回调函数
         if (imagesToLoad === 0) {
             callback(images);
         }
@@ -78,6 +80,7 @@ function render(images) {
         gl.bindTexture(gl.TEXTURE_2D, texture);
 
         // Set the parameters so we can render any size image.
+        // 设置参数以便使用任意尺的影像
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -94,6 +97,7 @@ function render(images) {
     var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
 
     // lookup the sampler locations.
+    // 寻找取样器的位置
     var u_image0Location = gl.getUniformLocation(program, "u_image0");
     var u_image1Location = gl.getUniformLocation(program, "u_image1");
 
@@ -142,10 +146,12 @@ function render(images) {
     gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
 
     // set which texture units to render with.
+    // 设置使用的纹理单元
     gl.uniform1i(u_image0Location, 0);  // texture unit 0
     gl.uniform1i(u_image1Location, 1);  // texture unit 1
 
     // Set each texture unit to use a particular texture.
+    // 设置每个纹理单元对应一个纹理
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, textures[0]);
     gl.activeTexture(gl.TEXTURE1);

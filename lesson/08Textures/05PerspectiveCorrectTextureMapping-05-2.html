@@ -2,36 +2,41 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WebGL 纹理映射的透视纠正-04</title>
+    <title>WebGL 纹理映射的透视纠正-05-2</title>
     <link href="./02DataTextures-01.css" rel="stylesheet" />
 </head>
 <body>
-    <canvas id="c"></canvas>
-    <script id="2d-vertex-shader" type="notjs">
-
+    <canvas id="canvas"></canvas>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 a_position;
-        attribute float a_brightness;
+        attribute vec2 a_texcoord;
 
-        varying float v_brightness;
+        uniform mat4 u_matrix;
+
+        varying vec2 v_texcoord;
 
         void main() {
-        gl_Position = a_position;
+        // Multiply the position by the matrix.
+        gl_Position = u_matrix * a_position;
 
-        // just pass the brightness on to the fragment shader
-        v_brightness = a_brightness;
+        // Pass the texcoord to the fragment shader.
+        v_texcoord = a_texcoord;
         }
-
     </script>
-    <script id="2d-fragment-shader" type="notjs">
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
         precision mediump float;
 
-        varying float v_brightness;
+        // Passed in from the vertex shader.
+        varying vec2 v_texcoord;
+
+        // The texture.
+        uniform sampler2D u_texture;
 
         void main() {
-        //fract 会保留小数部分所以结果还是 0 到 1之间   但是总共是 10 次 0 到 1 了。
-        gl_FragColor = vec4(fract(v_brightness * 10.), 0, 0, 1);  // reds 
+        gl_FragColor = texture2D(u_texture, v_texcoord);
         }
-
     </script>
     <!--
     for most samples webgl-utils only provides shader compiling/linking and
@@ -42,7 +47,7 @@
     -->
     <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
     <script src="../lib/webgl-utils.js"></script>
-    <!--<script src="../lib/m4.js"></script>-->
-    <script src="./05PerspectiveCorrectTextureMapping-04.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./05PerspectiveCorrectTextureMapping-05-2.js"></script>
 </body>
 </html>

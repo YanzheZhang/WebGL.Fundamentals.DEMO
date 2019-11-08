@@ -33,7 +33,7 @@ function main() {
     // Set Texcoords.
     setTexcoords(gl);
 
-    // Create a texture.
+    // Create a texture.  用于渲染Framebuffer
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -62,7 +62,7 @@ function main() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
 
-    // Create a texture to render to
+    // Create a texture to render to  Framebuffer目标纹理
     const targetTextureWidth = 256;
     const targetTextureHeight = 256;
     const targetTexture = gl.createTexture();
@@ -191,15 +191,19 @@ function main() {
 
         {
             // render to our targetTexture by binding the framebuffer
+            //通过绑定帧缓冲绘制到纹理
             gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
 
             // render cube with our 3x2 texture
+            // 使用 3×2 的纹理渲染立方体
             gl.bindTexture(gl.TEXTURE_2D, texture);
 
             // Tell WebGL how to convert from clip space to pixels
+            // 告诉WebGL如何从裁剪空间映射到像素空间
             gl.viewport(0, 0, targetTextureWidth, targetTextureHeight);
 
             // Clear the attachment(s).
+            // 清空画布和深度缓冲
             gl.clearColor(0, 0, 1, 1);   // clear to blue
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -209,15 +213,19 @@ function main() {
 
         {
             // render to the canvas
+            // 渲染到画布
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
             // render the cube with the texture we just rendered to
+            // 立方体使用刚才渲染的纹理
             gl.bindTexture(gl.TEXTURE_2D, targetTexture);
 
             // Tell WebGL how to convert from clip space to pixels
+            // 告诉WebGL如何从裁剪空间映射到像素空间
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
             // Clear the canvas AND the depth buffer.
+            // 清空画布和深度缓冲
             gl.clearColor(1, 1, 1, 1);   // clear to white
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 

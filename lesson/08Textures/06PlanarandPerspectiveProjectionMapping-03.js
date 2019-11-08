@@ -199,7 +199,7 @@ function main() {
 
         // ------ Draw the cube ------
 
-        gl.useProgram(colorProgramInfo.program);
+        gl.useProgram(colorProgramInfo.program);//切换program
 
         // Setup all the needed attributes.
         webglUtils.setBuffersAndAttributes(gl, colorProgramInfo, cubeLinesBufferInfo);

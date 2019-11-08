@@ -36,40 +36,26 @@ function main() {
     // Create a texture.
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
-
-    // fill texture with 3x2 pixels
+    // Fill the texture with a 4x4 LUMINANCE pixel.
     const level = 0;
-    const internalFormat = gl.LUMINANCE;
-    const width = 3;
-    const height = 2;
-    const border = 0;
-    const format = gl.LUMINANCE;//单通道 1字节
+    const format = gl.LUMINANCE;
     const type = gl.UNSIGNED_BYTE;
-    const data = new Uint8Array([
-      128, 64, 128,
-        0, 192, 0,
+    const border = 0;
+    const width = 2;
+    const height = 2;
+    const pixels = new Uint8Array([
+      255, 128, 255, 128,
+      128, 255, 128, 255,
+
     ]);
-    const alignment = 1;
-    /*
-    WebGL: INVALID_OPERATION: texImage2D: ArrayBufferView not big enough for request
-    结果是WebGL中有一种首次创建OpenGL后的模糊设定， 
-    计算机有时在数据为某些特定大小时速度会快一些， 
-    例如一次拷贝2，4 或 8 个字节比一次拷贝 1 个字节要快， 
-    WebGL默认使用 4 字节长度，所以它期望每一行数据是多个 4 字节数据（最后一行除外）。
-
-    我们之前的数据每行只有 3 个字节，总共为 6 字节， 
-    但是 WebGL 试图在第一行获取 4 个字节，第二行获取 3 个字节， 总共 7 个字节，所以会出现这样的报错。
-    */
-    gl.pixelStorei(gl.UNPACK_ALIGNMENT, alignment);//告诉WebGL一次处理 1 个字节
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border,
-                  format, type, data);
-
-    // set the filtering so we don't need mips
-    // 设置筛选器，我们不需要使用贴图所以就不用筛选器了
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texImage2D(gl.TEXTURE_2D, level, format, width, height, border,
+                  format, type, pixels);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//三类：REPEAT  CLAMP_TO_EDGE  MIRRORED_REPEAT
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.generateMipmap(gl.TEXTURE_2D);
+
+    function radToDeg(r) {
+        return r * 180 / Math.PI;
+    }
 
     function degToRad(d) {
         return d * Math.PI / 180;
@@ -275,4 +261,5 @@ function setTexcoords(gl) {
           ]),
         gl.STATIC_DRAW);
 }
+
 main();

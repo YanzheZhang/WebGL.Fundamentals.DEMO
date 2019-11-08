@@ -122,6 +122,7 @@ function main() {
         // Make a view matrix from the camera matrix.
         const viewMatrix = m4.inverse(cameraMatrix);
 
+        //纹理映射矩阵
         let textureWorldMatrix = m4.lookAt(
             [settings.posX, settings.posY, settings.posZ],          // position
             [settings.targetX, settings.targetY, settings.targetZ], // target
@@ -133,7 +134,7 @@ function main() {
         );
         // use the inverse of this world matrix to make
         // a matrix that will transform other positions
-        // to be relative this this world space.
+        // to be relative this world space.
         const textureMatrix = m4.inverse(textureWorldMatrix);
 
         gl.useProgram(textureProgramInfo.program);

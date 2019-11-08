@@ -182,19 +182,19 @@ function main() {
         var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
 
         var settings = [
-          { x: -1, y: 1, zRot: 0, magFilter: gl.NEAREST, minFilter: gl.NEAREST, },
-          { x: 0, y: 1, zRot: 0, magFilter: gl.LINEAR, minFilter: gl.LINEAR, },
-          { x: 1, y: 1, zRot: 0, magFilter: gl.LINEAR, minFilter: gl.NEAREST_MIPMAP_NEAREST, },
-          { x: -1, y: -1, zRot: 1, magFilter: gl.LINEAR, minFilter: gl.LINEAR_MIPMAP_NEAREST, },
-          { x: 0, y: -1, zRot: 1, magFilter: gl.LINEAR, minFilter: gl.NEAREST_MIPMAP_LINEAR, },
-          { x: 1, y: -1, zRot: 1, magFilter: gl.LINEAR, minFilter: gl.LINEAR_MIPMAP_LINEAR, },
+          { x: -1, y: 1, zRot: 0, magFilter: gl.NEAREST, minFilter: gl.NEAREST, }, //从最大的贴图中选择 1 个像素
+          { x: 0, y: 1, zRot: 0, magFilter: gl.LINEAR, minFilter: gl.LINEAR, }, //从最大的贴图中选择4个像素然后混合
+          { x: 1, y: 1, zRot: 0, magFilter: gl.LINEAR, minFilter: gl.NEAREST_MIPMAP_NEAREST, }, //选择最合适的贴图，然后从上面找到一个像素
+          { x: -1, y: -1, zRot: 1, magFilter: gl.LINEAR, minFilter: gl.LINEAR_MIPMAP_NEAREST, }, //选择最合适的贴图，然后取出 4 个像素进行混合
+          { x: 0, y: -1, zRot: 1, magFilter: gl.LINEAR, minFilter: gl.NEAREST_MIPMAP_LINEAR, }, // 选择最合适的两个贴图，从每个上面选择 1 个像素然后混合
+          { x: 1, y: -1, zRot: 1, magFilter: gl.LINEAR, minFilter: gl.LINEAR_MIPMAP_LINEAR, }, //选择最合适的两个贴图，从每个上选择 4 个像素然后混合
         ];
         var xSpacing = 1.2;
         var ySpacing = 0.7;
         settings.forEach(function (s) {
             gl.bindTexture(gl.TEXTURE_2D, textures[textureIndex]);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, s.minFilter);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, s.magFilter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, s.minFilter);//TEXTURE_MIN_FILTER 是当绘制的比最大贴图小的时候  
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, s.magFilter);//TEXTURE_MAG_FILTER 是绘制的比最大的贴图大的时候   只有 NEAREST 和 LINEAR 两个可选设置。
 
             var matrix = m4.translate(viewProjectionMatrix, s.x * xSpacing, s.y * ySpacing, -zDepth * 0.5);
             matrix = m4.zRotate(matrix, s.zRot * Math.PI);

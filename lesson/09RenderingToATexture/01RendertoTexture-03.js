@@ -97,10 +97,18 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, targetTexture, level);
 
     // create a depth renderbuffer
+    // 创建一个深度缓冲
     const depthBuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
 
+    /*
+    需要特别注意的是WebGL只允许三种附件组合形式。 根据规范 一定能正确运行的附件组合是：
+    COLOR_ATTACHMENT0 = RGBA/UNSIGNED_BYTE texture
+    COLOR_ATTACHMENT0 = RGBA/UNSIGNED_BYTE texture + DEPTH_ATTACHMENT = DEPTH_COMPONENT16 renderbuffer
+    COLOR_ATTACHMENT0 = RGBA/UNSIGNED_BYTE texture + DEPTH_STENCIL_ATTACHMENT = DEPTH_STENCIL renderbuffer
+    */
     // make a depth buffer and the same size as the targetTexture
+    // 设置深度缓冲的大小和targetTexture相同
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, targetTextureWidth, targetTextureHeight);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthBuffer);
 

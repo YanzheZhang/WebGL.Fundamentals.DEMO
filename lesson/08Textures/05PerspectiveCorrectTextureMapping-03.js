@@ -22,6 +22,9 @@ function main() {
     // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
+    /*
+    在上方的顶点中我们提供的 W 值为 1，但是我们知道WebGL会除以 W， 所以做如下修改应该结果不变。
+    */
     var mult = 20;
     var positions = [
         -.8, .8, 0, 1,  // 1st rect 1st triangle

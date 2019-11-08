@@ -1,30 +1,28 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WebGL 纹理映射的透视纠正-06</title>
-    <link href="./02DataTextures-01.css" rel="stylesheet" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebGL 立方体贴图-02</title>
+    <link href="./01Cubemaps-01.css" rel="stylesheet" />
 </head>
 <body>
     <canvas id="canvas"></canvas>
     <!-- vertex shader -->
     <script id="3d-vertex-shader" type="x-shader/x-vertex">
         attribute vec4 a_position;
-        attribute vec2 a_texcoord;
 
         uniform mat4 u_matrix;
 
-        varying vec2 v_texcoord;
+        varying vec3 v_normal;
 
         void main() {
-        // 将位置和矩阵相乘
+        // Multiply the position by the matrix.
         gl_Position = u_matrix * a_position;
 
-        // 手工除以 W   除以 W 意味值 gl_Position.w 始终为 1，X, Y, 和 Z 不会有什么影响，因为WebGL也会默认做除法
-        gl_Position /= gl_Position.w;
-
-        // 将纹理坐标传到片断着色器
-        v_texcoord = a_texcoord;
+        // Pass a normal. Since the positions
+        // centered around the origin we can just
+        // pass the position
+        v_normal = normalize(a_position.xyz);
         }
     </script>
     <!-- fragment shader -->
@@ -32,13 +30,13 @@
         precision mediump float;
 
         // Passed in from the vertex shader.
-        varying vec2 v_texcoord;
+        varying vec3 v_normal;
 
         // The texture.
-        uniform sampler2D u_texture;
+        uniform samplerCube u_texture;
 
         void main() {
-        gl_FragColor = texture2D(u_texture, v_texcoord);
+        gl_FragColor = textureCube(u_texture, normalize(v_normal));
         }
     </script>
     <!--
@@ -48,9 +46,10 @@
     and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
     for webgl-utils, m3, m4, and webgl-lessons-ui.
     -->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>-->
     <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
-    <script src="../lib/webgl-utils.js"></script>
-    <script src="../lib/m4.js"></script>
-    <script src="./05PerspectiveCorrectTextureMapping-06.js"></script>
+    <script src="../../lib/m4.js"></script>
+    <script src="../../lib/webgl-utils.js"></script>
+    <script src="./01Cubemaps-02.js"></script>
 </body>
 </html>

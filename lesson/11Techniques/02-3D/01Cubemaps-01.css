@@ -1,0 +1,14 @@
+﻿/*@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");*/
+@import url("../../lib/webgl-tutorials.css");
+body {
+  margin: 0;
+}
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+img {
+  margin: 5px;
+  border: 1px solid black;
+}

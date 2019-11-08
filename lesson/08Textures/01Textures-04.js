@@ -59,13 +59,21 @@ function main() {
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-        // Check if the image is a power of 2 in both dimensions.
+        // Check if the image is a power of 2 in both dimensions.  是 2 的幂，一般用贴图
         if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
             // Yes, it's a power of 2. Generate mips.
-            gl.generateMipmap(gl.TEXTURE_2D);
+            gl.generateMipmap(gl.TEXTURE_2D);//根据原始图像创建所有的缩小级别，你也可以自己提供缩小级别的图像
         } else {
-            // No, it's not a power of 2. Turn of mips and set wrapping to clamp to edge
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            /*
+            WebGL: INVALID_OPERATION: generateMipmap: level 0 not power of 2 or not all the same size
+            WebGL: drawArrays: texture bound to texture unit 0 is not renderable.
+                   It maybe non-power-of-2 and have incompatible texture filtering or is not 'texture complete'.
+
+            解决这个问题只需要将包裹模式设置为 CLAMP_TO_EDGE 
+            并且通过设置过滤器为 LINEAR or NEAREST 来关闭贴图映射
+            */
+            // No, it's not a power of 2. Turn of mips and set wrapping to clamp to edge  不是 2 的幂，关闭贴图并设置包裹模式为到边缘
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//告诉WebGL在某个方向不需要重复
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         }
@@ -160,12 +168,14 @@ function main() {
         var viewMatrix = m4.inverse(cameraMatrix);
 
         var settings = [
-          { x: -1, y: -3, z: -30, filter: gl.NEAREST, },
-          { x: 0, y: -3, z: -30, filter: gl.LINEAR, },
-          { x: 1, y: -3, z: -30, filter: gl.NEAREST_MIPMAP_LINEAR, },
+          { x: -1, y: -3, z: -30, filter: gl.NEAREST, },//只从最大的体贴图上选择1像素
+          { x: 0, y: -3, z: -30, filter: gl.LINEAR, }, //只从最大的体贴图上选择4像素混合
+          { x: 1, y: -3, z: -30, filter: gl.NEAREST_MIPMAP_LINEAR, },//选择最合适的两个贴图，从每个上面选择 1 个像素然后混合   (使用多级贴图并且混合颜色，绘制的越小WebGL挑选的像素离原图关系越远)
+
           { x: -1, y: -1, z: -10, filter: gl.NEAREST, },
           { x: 0, y: -1, z: -10, filter: gl.LINEAR, },
           { x: 1, y: -1, z: -10, filter: gl.NEAREST_MIPMAP_LINEAR, },
+
           { x: -1, y: 1, z: 0, filter: gl.NEAREST, },
           { x: 0, y: 1, z: 0, filter: gl.LINEAR, },
           { x: 1, y: 1, z: 0, filter: gl.LINEAR_MIPMAP_NEAREST, },
@@ -181,7 +191,7 @@ function main() {
             var r2 = 1 + r * 0.2;
 
             gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);//告诉WebGL在某个方向不需要重复
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, s.filter);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
