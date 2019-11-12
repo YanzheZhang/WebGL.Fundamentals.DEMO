@@ -1,0 +1,22 @@
+﻿/*@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");*/
+@import url("../../lib/webgl-tutorials.css");
+body {
+  margin: 0;
+}
+canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+.container {
+  position: relative;
+}
+#overlay {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-family: monospace;
+  padding: 1em;
+}

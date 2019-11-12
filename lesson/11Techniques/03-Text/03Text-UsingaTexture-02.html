@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebGL 文字 - 使用纹理-02</title>
+    <link href="./03Text-UsingaTexture-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec4 a_color;
+
+        uniform mat4 u_matrix;
+
+        varying vec4 v_color;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_matrix * a_position;
+
+        // Pass the color to the fragment shader.
+        v_color = a_color;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Passed in from the vertex shader.
+        varying vec4 v_color;
+
+        void main() {
+        gl_FragColor = v_color;
+        }
+    </script>
+    <script id="text-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec2 a_texcoord;
+
+        uniform mat4 u_matrix;
+
+        varying vec2 v_texcoord;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_matrix * a_position;
+
+        // Pass the texcoord to the fragment shader.
+        v_texcoord = a_texcoord;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="text-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Passed in from the vertex shader.
+        varying vec2 v_texcoord;
+
+        uniform sampler2D u_texture;
+
+        void main() {
+        gl_FragColor = texture2D(u_texture, v_texcoord);// + vec4(1,0,0,1);
+        }
+    </script>
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
+    <script src="../../lib/m4.js"></script>
+    <script src="../../lib/webgl-utils.js"></script>
+    <script src="../../lib/primitives.js"></script>
+    <script src="./03Text-UsingaTexture-02.js"></script>
+</body>
+</html>
