@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebGL 雾-03</title>
+    <link href="./05Fog-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="uiContainer">
+        <div id="ui"></div>
+    </div>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec2 a_texcoord;
+
+        uniform mat4 u_worldView;
+        uniform mat4 u_projection;
+
+        varying vec2 v_texcoord;
+        varying float v_fogDepth;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_projection * u_worldView * a_position;
+
+        // Pass the texcoord to the fragment shader.
+        v_texcoord = a_texcoord;
+
+        // Pass just the negated z position relative to the camera.
+        // the camera is looking in the -z direction so normally stuff
+        // in front of the camera has a negative Z position
+        // but by negating he we get a positive depth.
+        v_fogDepth = -(u_worldView * a_position).z;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Passed in from the vertex shader.
+        varying vec2 v_texcoord;
+        varying float v_fogDepth;
+
+        // The texture.
+        uniform sampler2D u_texture;
+        uniform vec4 u_fogColor;
+        uniform float u_fogNear;
+        uniform float u_fogFar;
+
+        void main() {
+        vec4 color = texture2D(u_texture, v_texcoord);
+
+        float fogAmount = smoothstep(u_fogNear, u_fogFar, v_fogDepth);
+
+        gl_FragColor = mix(color, u_fogColor, fogAmount);
+        }
+    </script>
+    <!--
+    for most samples webgl-utils only provides shader compiling/linking and
+    canvas resizing because why clutter the examples with code that's the same in every sample.
+    See http://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+    and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    for webgl-utils, m3, m4, and webgl-lessons-ui.
+    -->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>-->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>-->
+    <script src="../../lib/m4.js"></script>
+    <script src="../../lib/webgl-utils.js"></script>
+    <script src="../../lib/webgl-lessons-ui.js"></script>
+    <script src="./05Fog-03.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>WebGL 蒙皮-01</title>
+    <link href="./04Skinning-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <!-- vertex shader -->
+    <script id="vs" type="notjs">
+        attribute vec4 a_position;
+        attribute vec4 a_weight;
+        attribute vec4 a_boneNdx;
+
+        uniform mat4 projection;
+        uniform mat4 view;
+        uniform mat4 bones[4];
+
+        void main() {
+
+        gl_Position = projection * view *
+        (bones[int(a_boneNdx[0])] * a_position * a_weight[0] +
+        bones[int(a_boneNdx[1])] * a_position * a_weight[1] +
+        bones[int(a_boneNdx[2])] * a_position * a_weight[2] +
+        bones[int(a_boneNdx[3])] * a_position * a_weight[3]);
+
+        }
+    </script>
+    <script id="fs" type="notjs">
+        precision mediump float;
+        uniform vec4 color;
+        void main () {
+        gl_FragColor = color;
+        }
+    </script>
+    <script id="vs2" type="notjs">
+        attribute vec4 a_position;
+
+        uniform mat4 projection;
+        uniform mat4 view;
+        uniform mat4 model;
+
+        void main() {
+        gl_Position = projection * view * model * a_position;
+        }
+    </script>
+    <!--
+    for most samples webgl-utils only provides shader compiling/linking and
+    canvas resizing because why clutter the examples with code that's the same in every sample.
+    See http://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+    and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    for webgl-utils, m3, m4, and webgl-lessons-ui.
+    -->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+    <script src="https://webglfundamentals.org/webgl/resources/m4.js"></script>-->
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>-->
+    <script src="../../lib/m4.js"></script>
+    <script src="../../lib/webgl-utils.js"></script>
+    <script src="../../lib/webgl-lessons-ui.js"></script>
+    <script src="./04Skinning-01.js"></script>
+</body>
+</html>
