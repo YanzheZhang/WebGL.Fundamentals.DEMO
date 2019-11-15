@@ -1,0 +1,6 @@
+﻿canvas { 
+    /*这种方式不能改变画布本身大小，只是改变了在浏览器以多大区域绘制画布*/
+    border: 1px solid black; 
+    width:500px;
+    height:800px;
+}
