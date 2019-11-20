@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Drawing Without Data-06</title>
+    <link href="./03PullingVertices-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec2 positionAndTexcoordIndices;
+
+        uniform sampler2D positionTexture;
+        uniform vec2 positionTextureSize;
+        uniform sampler2D texcoordTexture;
+        uniform vec2 texcoordTextureSize;
+
+        uniform mat4 u_matrix;
+
+        varying vec2 v_texcoord;
+
+        vec4 texelFetch(sampler2D tex, vec2 texSize, vec2 pixelCoord) {
+          vec2 uv = (pixelCoord + 0.5) / texSize;
+          return texture2D(tex, uv);
+        }
+
+        vec4 getValueByIndexFromTexture(sampler2D tex, vec2 texSize, float index) {
+          float col = mod(index, texSize.x);
+          float row = floor(index / texSize.x);
+          return texelFetch(tex, texSize, vec2(col, row));
+        }
+
+        void main() {
+          float positionIndex = positionAndTexcoordIndices.x;
+          vec3 position = getValueByIndexFromTexture(positionTexture, positionTextureSize, positionIndex).xyz;
+          
+          // Multiply the position by the matrix.
+          gl_Position = u_matrix * vec4(position, 1);
+          
+          float texcoordIndex = positionAndTexcoordIndices.y;
+          vec2 texcoord = getValueByIndexFromTexture(texcoordTexture, texcoordTextureSize, texcoordIndex).xy;
+          
+          // Pass the texcoord to the fragment shader.
+          v_texcoord = texcoord;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Passed in from the vertex shader.
+        varying vec2 v_texcoord;
+
+        // The texture.
+        uniform sampler2D u_texture;
+
+        void main() {
+          gl_FragColor = texture2D(u_texture, v_texcoord);
+        }
+    </script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./03PullingVertices-01.js"></script>
+</body>
+</html>
