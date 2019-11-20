@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebGL 2D vs 3D 库-03</title>
+    <link href="./122Dvs3Dlibraries-03.css" rel="stylesheet" />
+</head>
+<body>
+    <h1 class="description">3D in WebGL</h1>
+    <p><canvas id="c"></canvas></p>
+    <p class="description"><a href="./122Dvs3Dlibraries-02.html">compare to 3D in WebGL</a></p>
+    <!-- vertex shader -->
+    <script id="2d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        uniform mat4 u_worldViewProjection;
+
+        void main() {
+        gl_Position = u_worldViewProjection * a_position;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="2d-fragment-shader" type="x-shader/x-fragment">
+        void main() {
+        gl_FragColor = vec4(0,0,0,1);
+        }
+    </script>
+    <!--
+    for most samples webgl-utils only provides shader compiling/linking and
+    canvas resizing because why clutter the examples with code that's the same in every sample.
+    See http://webglfundamentals.org/webgl/lessons/webgl-boilerplate.html
+    and http://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    for webgl-utils, m3, m4, and webgl-lessons-ui.
+    -->
+    <!--<script src="https://webglfundamentals.org/webgl/lessons/resources/../../resources/webgl-utils.js"></script>-->
+    <!--<script src="https://webglfundamentals.org/webgl/lessons/resources/../../resources/lessons-helper.js"></script>-->
+    <!-- you can and should delete this script. it is only used on the site to help with errors -->
+    <!--<script src="https://webglfundamentals.org/webgl/lessons/resources/../../resources/m4.js"></script>-->
+    <script src="../lib/lessons-helper.js"></script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./122Dvs3Dlibraries-03.js"></script>
+</body>
+</html>

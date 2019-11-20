@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Indexed Vertices (gl.drawElements)-01</title>
+    <link href="./03IndexedVertices(gl.drawElements)-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec2 a_position;
+
+        uniform vec2 u_resolution;
+
+        void main() {
+        // convert the position from pixels to 0.0 to 1.0
+        vec2 zeroToOne = a_position / u_resolution;
+
+        // convert from 0->1 to 0->2
+        vec2 zeroToTwo = zeroToOne * 2.0;
+
+        // convert from 0->2 to -1->+1 (clipspace)
+        vec2 clipSpace = zeroToTwo - 1.0;
+
+        gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        uniform vec4 u_color;
+
+        void main() {
+        gl_FragColor = u_color;
+        }
+    </script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="./03IndexedVertices(gl.drawElements)-01.js"></script>
+</body>
+</html>

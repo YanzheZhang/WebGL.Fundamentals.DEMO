@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Instanced Drawing-01</title>
+    <link href="./08InstancedDrawing-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        uniform mat4 matrix;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = matrix * a_position;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        uniform vec4 color;
+
+        void main() {
+        gl_FragColor = color;
+        }
+    </script>  
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./08InstancedDrawing-01.js"></script>
+</body>
+</html>
