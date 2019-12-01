@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WebGL 基础概念-02</title>
+    <title>WebGL 基础概念-04</title>
     <link href="./01Fundamentals-01.css" rel="stylesheet" />
 </head>
 <body>
@@ -32,11 +32,12 @@
         // fragment shaders don't have a default precision so we need
         // to pick one. mediump is a good default
         precision mediump float;
+        uniform vec4 u_color;
 
         void main() {
-        // gl_FragColor is a special variable a fragment shader
-        // is responsible for setting
-        gl_FragColor = vec4(1, 0, 0.5, 1); // return redish-purple
+          // gl_FragColor is a special variable a fragment shader
+          // is responsible for setting
+          gl_FragColor = u_color;
         }
 
     </script>
@@ -52,6 +53,6 @@
     -->
     <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
     <script src="../lib/webgl-utils.js"></script>
-    <script src="./01Fundamentals-02.js"></script>
+    <script src="./01Fundamentals-04.js"></script>
 </body>
 </html>

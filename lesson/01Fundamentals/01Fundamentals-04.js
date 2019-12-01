@@ -50,6 +50,7 @@ function main() {
     // look up where the vertex data needs to go.
     var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
     var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
+    var colorUniformLocation = gl.getUniformLocation(program, "u_color");
 
     // Create a buffer and put three 2d clip space points in it
     var positionBuffer = gl.createBuffer();
@@ -101,10 +102,52 @@ function main() {
     gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
     // draw
-    var primitiveType = gl.TRIANGLES;
-    var offset = 0;
-    var count = 6;
-    gl.drawArrays(primitiveType, offset, count);
+    //var primitiveType = gl.TRIANGLES;
+    //var offset = 0;
+    //var count = 6;
+    //gl.drawArrays(primitiveType, offset, count);
+    // 绘制50个随机颜色矩形
+    for (var ii = 0; ii < 50; ++ii) {
+        // 创建一个随机矩形
+        // 并将写入位置缓冲
+        // 因为位置缓冲是我们绑定在
+        // `ARRAY_BUFFER`绑定点上的最后一个缓冲
+        setRectangle(
+            gl, randomInt(300), randomInt(300), randomInt(300), randomInt(300));
+
+        // 设置一个随机颜色
+        gl.uniform4f(colorUniformLocation, Math.random(), Math.random(), Math.random(), 1);
+
+        // 绘制矩形
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+    }
+
+    // 返回 0 到 range 范围内的随机整数
+    function randomInt(range) {
+        return Math.floor(Math.random() * range);
+    }
+
+    // 用参数生成矩形顶点并写进缓冲
+
+    function setRectangle(gl, x, y, width, height) {
+        var x1 = x;
+        var x2 = x + width;
+        var y1 = y;
+        var y2 = y + height;
+
+        // 注意: gl.bufferData(gl.ARRAY_BUFFER, ...) 将会影响到
+        // 当前绑定点`ARRAY_BUFFER`的绑定缓冲
+        // 目前我们只有一个缓冲，如果我们有多个缓冲
+        // 我们需要先将所需缓冲绑定到`ARRAY_BUFFER`
+
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+           x1, y1,
+           x2, y1,
+           x1, y2,
+           x1, y2,
+           x2, y1,
+           x2, y2]), gl.STATIC_DRAW);
+    }
 }
 
 main();
