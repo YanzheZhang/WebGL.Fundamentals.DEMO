@@ -1,4 +1,5 @@
-﻿"use strict";
+﻿/* eslint no-console:0 consistent-return:0 */
+"use strict";
 
 function main() {
     // Get A WebGL context
@@ -13,13 +14,13 @@ function main() {
     var program = webglUtils.createProgramFromScripts(gl, ["2d-vertex-shader", "2d-fragment-shader"]);
 
     // look up where the vertex data needs to go.
-    var positionLocation = gl.getAttribLocation(program, "a_position");
+    var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
     var colorLocation = gl.getAttribLocation(program, "a_color");
 
     // lookup uniforms
     var matrixLocation = gl.getUniformLocation(program, "u_matrix");
 
-    // Create a buffer for the positions.
+    // Create a buffer.
     var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Set Geometry.
@@ -77,20 +78,21 @@ function main() {
         // Tell it to use our program (pair of shaders)
         gl.useProgram(program);
 
-        // Turn on the position attribute
-        gl.enableVertexAttribArray(positionLocation);
+        // Turn on the attribute
+        gl.enableVertexAttribArray(positionAttributeLocation);
 
         // Bind the position buffer.
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-        // Tell the position attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+        // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
         var size = 2;          // 2 components per iteration
         var type = gl.FLOAT;   // the data is 32bit floats
         var normalize = false; // don't normalize the data
         var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
         var offset = 0;        // start at the beginning of the buffer
         gl.vertexAttribPointer(
-            positionLocation, size, type, normalize, stride, offset);
+            positionAttributeLocation, size, type, normalize, stride, offset);
+
 
         // Turn on the color attribute
         gl.enableVertexAttribArray(colorLocation);
@@ -100,12 +102,13 @@ function main() {
 
         // Tell the color attribute how to get data out of colorBuffer (ARRAY_BUFFER)
         var size = 4;          // 4 components per iteration
-        var type = gl.FLOAT;   // the data is 32bit floats
-        var normalize = false; // don't normalize the data
+        var type = gl.UNSIGNED_BYTE;  // 数据类型是8位的 UNSIGNED_BYTE 类型。
+        var normalize = true; // don't normalize the data
         var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
         var offset = 0;        // start at the beginning of the buffer
         gl.vertexAttribPointer(
             colorLocation, size, type, normalize, stride, offset);
+
 
         // Compute the matrix
         var matrix = m3.projection(gl.canvas.clientWidth, gl.canvas.clientHeight);
@@ -123,7 +126,6 @@ function main() {
         gl.drawArrays(primitiveType, offset, count);
     }
 }
-
 
 // Fill the buffer with the values that define a rectangle.
 // Note, will put the values in whatever buffer is currently
@@ -146,23 +148,23 @@ function setGeometry(gl) {
 // Note, will put the values in whatever buffer is currently
 // bound to the ARRAY_BUFFER bind point
 function setColors(gl) {
-    // Pick 2 random colors.
-    var r1 = Math.random();
-    var b1 = Math.random();
-    var g1 = Math.random();
-    var r2 = Math.random();
-    var b2 = Math.random();
-    var g2 = Math.random();
+    // 设置两个随机颜色
+    var r1 = Math.random() * 256; // 0 到 255.99999 之间
+    var b1 = Math.random() * 256; // 这些数据
+    var g1 = Math.random() * 256; // 在存入缓冲时
+    var r2 = Math.random() * 256; // 将被截取成
+    var b2 = Math.random() * 256; // Uint8Array 类型
+    var g2 = Math.random() * 256;
 
     gl.bufferData(
         gl.ARRAY_BUFFER,
-        new Float32Array(
-          [r1, b1, g1, 1,
-            r1, b1, g1, 1,
-            r1, b1, g1, 1,
-            r2, b2, g2, 1,
-            r2, b2, g2, 1,
-            r2, b2, g2, 1]),
+        new Uint8Array(   // Uint8Array
+          [r1, b1, g1, 255,
+            r1, b1, g1, 255,
+            r1, b1, g1, 255,
+            r2, b2, g2, 255,
+            r2, b2, g2, 255,
+            r2, b2, g2, 255]),
         gl.STATIC_DRAW);
 }
 

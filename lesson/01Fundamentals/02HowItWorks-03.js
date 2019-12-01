@@ -102,8 +102,8 @@ function main() {
 
         // Tell the color attribute how to get data out of colorBuffer (ARRAY_BUFFER)
         var size = 4;          // 4 components per iteration
-        var type = gl.UNSIGNED_BYTE;  // 数据类型是8位的 UNSIGNED_BYTE 类型。
-        var normalize = true; // don't normalize the data
+        var type = gl.FLOAT;   // the data is 32bit floats
+        var normalize = false; // don't normalize the data
         var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
         var offset = 0;        // start at the beginning of the buffer
         gl.vertexAttribPointer(
@@ -148,23 +148,30 @@ function setGeometry(gl) {
 // Note, will put the values in whatever buffer is currently
 // bound to the ARRAY_BUFFER bind point
 function setColors(gl) {
-    // 设置两个随机颜色
-    var r1 = Math.random() * 256; // 0 到 255.99999 之间
-    var b1 = Math.random() * 256; // 这些数据
-    var g1 = Math.random() * 256; // 在存入缓冲时
-    var r2 = Math.random() * 256; // 将被截取成
-    var b2 = Math.random() * 256; // Uint8Array 类型
-    var g2 = Math.random() * 256;
+    // Pick 2 random colors.
+    //var r1 = Math.random();
+    //var b1 = Math.random();
+    //var g1 = Math.random();
+    //var r2 = Math.random();
+    //var b2 = Math.random();
+    //var g2 = Math.random();
 
     gl.bufferData(
         gl.ARRAY_BUFFER,
-        new Uint8Array(   // Uint8Array
-          [r1, b1, g1, 255,
-            r1, b1, g1, 255,
-            r1, b1, g1, 255,
-            r2, b2, g2, 255,
-            r2, b2, g2, 255,
-            r2, b2, g2, 255]),
+        new Float32Array(
+          //[r1, b1, g1, 1,
+          //  r1, b1, g1, 1,
+          //  r1, b1, g1, 1,
+          //  r2, b2, g2, 1,
+          //  r2, b2, g2, 1,
+          //  r2, b2, g2, 1]
+         [Math.random(), Math.random(), Math.random(), 1,
+          Math.random(), Math.random(), Math.random(), 1,
+          Math.random(), Math.random(), Math.random(), 1,
+          Math.random(), Math.random(), Math.random(), 1,
+          Math.random(), Math.random(), Math.random(), 1,
+          Math.random(), Math.random(), Math.random(), 1]
+        ),
         gl.STATIC_DRAW);
 }
 

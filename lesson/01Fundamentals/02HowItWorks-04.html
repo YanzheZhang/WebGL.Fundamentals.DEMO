@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>WebGL 工作原理-02</title>
+    <title>WebGL 工作原理-04</title>
     <link href="./01Fundamentals-01.css" rel="stylesheet" />
 </head>
 <body>
@@ -16,7 +16,7 @@
             <div id="scaleY"></div>
         </div>
     </div>
-    <script id="2d-vertex-shader" type="x-shader/x-vertex">
+    <script id="2d-vertex-shader" type="notjs">
         attribute vec2 a_position;
         attribute vec4 a_color;
 
@@ -24,23 +24,23 @@
 
         varying vec4 v_color;
 
-        void main() {
-        // Multiply the position by the matrix.
-        gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
-
-        // Copy the color from the attribute to the varying.
-        v_color = a_color;
+           void main() {
+           // Multiply the position by the matrix.
+           gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
+           
+           v_color = a_color;
         }
     </script>
-    <!-- fragment shader -->
-    <script id="2d-fragment-shader" type="x-shader/x-fragment">
+    <script id="2d-fragment-shader" type="notjs">
+        // fragment shaders don't have a default precision so we need
+        // to pick one. mediump is a good default
         precision mediump float;
-
         varying vec4 v_color;
 
         void main() {
-        gl_FragColor = v_color;
+           gl_FragColor = v_color;
         }
+
     </script>
 
     <!-- 参考 https://webglfundamentals.org/webgl/lessons/zh_cn/webgl-fundamentals.html-->
@@ -58,6 +58,6 @@
     <script src="../lib/webgl-utils.js"></script>
     <script src="../lib/webgl-lessons-ui.js"></script>
     <script src="../lib/m3.js"></script>
-    <script src="./02HowItWorks-02.js"></script>
+    <script src="./02HowItWorks-04.js"></script>
 </body>
 </html>
