@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>WebGL 重置画布尺寸-01</title>
-    <link href="./04ResizingtheCanvas-01.css" rel="stylesheet" />
+    <title>WebGL 重置画布尺寸-04</title>
+    <link href="./03ResizingtheCanvas-04.css" rel="stylesheet" />
 </head>
 <body>
-    <canvas id="canvas" width="10" height="15" style="width: 400px; height: 300px;"></canvas>
+    <canvas id="canvas" ></canvas>
     <script id="2d-vertex-shader" type="x-shader/x-vertex">
         attribute vec2 a_position;
 
@@ -17,6 +17,8 @@
         vec2 position = (u_matrix * vec3(a_position, 1)).xy;
 
         gl_Position = vec4(position, 0, 1);
+     //   gl_Position = vec4(0,0, 0, 1);
+     //   gl_PointSize=10.0;
         }
     </script>
     <!-- fragment shader -->
@@ -30,6 +32,7 @@
         }
     </script>
     <script src="../lib/webgl-utils.js"></script>
-    <script src="./04ResizingtheCanvas-01.js"></script>
+    <script src="../lib/m3.js"></script>
+    <script src="./03ResizingtheCanvas-04.js"></script>
 </body>
 </html>
