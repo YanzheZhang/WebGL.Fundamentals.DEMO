@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>01WebGLRampTextures-03</title>
+    <link href="./01WebGLRampTextures-01.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="uiContainer">
+        <div id="ui">
+            <div id="fRotation"></div>
+        </div>
+    </div>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec3 a_normal;
+
+        uniform mat4 u_worldViewProjection;
+        uniform mat4 u_worldInverseTranspose;
+
+        varying vec3 v_normal;
+
+        void main() {
+        // Multiply the position by the matrix.
+        gl_Position = u_worldViewProjection * a_position;
+
+        // orient the normals and pass to the fragment shader
+        v_normal = mat3(u_worldInverseTranspose) * a_normal;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        // Passed in from the vertex shader.
+        varying vec3 v_normal;
+
+        uniform vec3 u_reverseLightDirection;
+        uniform vec4 u_color;
+        uniform sampler2D u_ramp;
+        uniform vec2 u_rampSize;
+        uniform bool u_useRampTexture;
+
+        void main() {
+        // because v_normal is a varying it's interpolated
+        // so it will not be a unit vector. Normalizing it
+        // will make it a unit vector again
+        vec3 normal = normalize(v_normal);
+
+        float cosAngle = dot(normal, u_reverseLightDirection);
+
+        // convert from -1-1 to 0-1
+        float u = cosAngle * 0.5 + 0.5;
+        
+        // make a texture coordinate.
+        vec2 uv = vec2(u, 0.5);
+        
+        // scale to size of ramp
+        vec2 texelRange = uv * (u_rampSize - 1.0);
+        
+        // offset by half a texel and convert to texture coordinate
+        vec2 rampUV = (texelRange + 0.5) / u_rampSize;
+        
+        vec4 rampColor = texture2D(u_ramp, rampUV);
+        
+        if (!u_useRampTexture) {
+        rampColor = vec4(u, u, u, 1);
+        }
+        
+        gl_FragColor = u_color;
+        gl_FragColor *= rampColor;
+    }
+    </script>
+    <!--<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>-->
+    <script src="../../lib/m4.js"></script>
+    <script src="../../lib/webgl-utils.js"></script>
+    <script src="../../lib/webgl-lessons-ui.js"></script>
+    <script src="../../data/model/headdata.js"></script>
+    <script src="./01WebGLRampTextures-03.js"></script>
+</body>
+</html>
