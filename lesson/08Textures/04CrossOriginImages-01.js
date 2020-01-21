@@ -50,12 +50,6 @@ function main() {
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
 
-    function requestCORSIfNotSameOrigin(img, url) {
-        if ((new URL(url)).origin !== window.location.origin) {
-            img.crossOrigin = "";
-        }
-    }
-
     // creates a texture info { width: w, height: h, texture: tex }
     // The texture will start with 1x1 pixels and be updated
     // when the image has loaded
@@ -84,7 +78,6 @@ function main() {
             gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
         });
-        requestCORSIfNotSameOrigin(img, url);
         img.src = url;
 
         return textureInfo;
