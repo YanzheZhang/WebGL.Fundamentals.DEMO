@@ -47,8 +47,10 @@ function main() {
     const matrixData = new Float32Array(numInstances * 16);
     const matrices = [];
     for (let i = 0; i < numInstances; ++i) {
-        const byteOffsetToMatrix = i * 16 * 4;
+        const byteOffsetToMatrix = i * 16 * 4;//一个float4字节？
         const numFloatsForView = 16;
+        //new Float32Array(buffer [, byteOffset [, length]]);
+        //将matrices与matrixData关联
         matrices.push(new Float32Array(
             matrixData.buffer,
             byteOffsetToMatrix,
@@ -98,40 +100,41 @@ function main() {
        gl.bufferSubData(gl.ARRAY_BUFFER, 0, matrixData);
 
        // set all 4 attributes for matrix
+       //attribute传mat4需要拆分成4个vec4
        const bytesPerMatrix = 4 * 16;
-    for (let i = 0; i < 4; ++i) {
-        const loc = matrixLoc + i;
-        gl.enableVertexAttribArray(loc);
-        // note the stride and offset
-        const offset = i * 16;  // 4 floats per row, 4 bytes per float
-        gl.vertexAttribPointer(
-            loc,              // location
-            4,                // size (num values to pull from buffer per iteration)
-            gl.FLOAT,         // type of data in buffer
-            false,            // normalize
-            bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
-            offset,           // offset in buffer
-        );
-        // this line says this attribute only changes for each 1 instance
-        ext.vertexAttribDivisorANGLE(loc, 1);
-    }
+       for (let i = 0; i < 4; ++i) {
+           const loc = matrixLoc + i;
+           gl.enableVertexAttribArray(loc);
+           // note the stride and offset
+           const offset = i * 16;  // 4 floats per row, 4 bytes per float
+           gl.vertexAttribPointer(
+               loc,              // location
+               4,                // size (num values to pull from buffer per iteration)
+               gl.FLOAT,         // type of data in buffer
+               false,            // normalize
+               bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
+               offset,           // offset in buffer
+           );
+           // this line says this attribute only changes for each 1 instance
+           ext.vertexAttribDivisorANGLE(loc, 1);
+       }
 
-    // set attribute for color
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.enableVertexAttribArray(colorLoc);
-    gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
-    // this line says this attribute only changes for each 1 instance
-    ext.vertexAttribDivisorANGLE(colorLoc, 1);
-
-    ext.drawArraysInstancedANGLE(
-      gl.TRIANGLES,
-      0,             // offset
-      numVertices,   // num vertices per instance
-      numInstances,  // num instances
-    );
-    requestAnimationFrame(render);
-}
-requestAnimationFrame(render);
+       // set attribute for color
+       gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+       gl.enableVertexAttribArray(colorLoc);
+       gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
+       // this line says this attribute only changes for each 1 instance
+       ext.vertexAttribDivisorANGLE(colorLoc, 1);
+       
+       ext.drawArraysInstancedANGLE(
+         gl.TRIANGLES,
+         0,             // offset
+         numVertices,   // num vertices per instance
+         numInstances,  // num instances
+       );
+       requestAnimationFrame(render);
+   }
+   requestAnimationFrame(render);
 }
 
 main();

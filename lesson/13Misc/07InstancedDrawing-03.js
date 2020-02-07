@@ -88,8 +88,7 @@ function main() {
         // set the view and projection matrices since
         // they are shared by all instances
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-        gl.uniformMatrix4fv(projectionLoc, false,
-            m4.orthographic(-aspect, aspect, -1, 1, -1, 1));
+        gl.uniformMatrix4fv(projectionLoc, false,m4.orthographic(-aspect, aspect, -1, 1, -1, 1));
         gl.uniformMatrix4fv(viewLoc, false, m4.zRotation(time * .1));
 
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -99,48 +98,49 @@ function main() {
         // update all the matrices
         matrices.forEach((mat, ndx) => {
             m4.translation(-0.5 + ndx * 0.25, 0, 0, mat);
-        m4.zRotate(mat, time * (0.1 + 0.1 * ndx), mat);
-    });
+            m4.zRotate(mat, time * (0.1 + 0.1 * ndx), mat);
+            console.log(matrixData);
+        });
 
-    // upload the new matrix data
-    gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, matrixData);
-
-    // set all 4 attributes for matrix
-    const bytesPerMatrix = 4 * 16;
-    for (let i = 0; i < 4; ++i) {
-        const loc = matrixLoc + i;
-        gl.enableVertexAttribArray(loc);
-        // note the stride and offset
-        const offset = i * 16;  // 4 floats per row, 4 bytes per float
-        gl.vertexAttribPointer(
-            loc,              // location
-            4,                // size (num values to pull from buffer per iteration)
-            gl.FLOAT,         // type of data in buffer
-            false,            // normalize
-            bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
-            offset,           // offset in buffer
-        );
+        // upload the new matrix data
+        gl.bindBuffer(gl.ARRAY_BUFFER, matrixBuffer);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, matrixData);
+       
+        // set all 4 attributes for matrix
+        const bytesPerMatrix = 4 * 16;
+        for (let i = 0; i < 4; ++i) {
+            const loc = matrixLoc + i;
+            gl.enableVertexAttribArray(loc);
+            // note the stride and offset
+            const offset = i * 16;  // 4 floats per row, 4 bytes per float
+            gl.vertexAttribPointer(
+                loc,              // location
+                4,                // size (num values to pull from buffer per iteration)
+                gl.FLOAT,         // type of data in buffer
+                false,            // normalize
+                bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
+                offset,           // offset in buffer
+            );
+            // this line says this attribute only changes for each 1 instance
+            ext.vertexAttribDivisorANGLE(loc, 1);
+        }
+       
+        // set attribute for color
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.enableVertexAttribArray(colorLoc);
+        gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
         // this line says this attribute only changes for each 1 instance
-        ext.vertexAttribDivisorANGLE(loc, 1);
+        ext.vertexAttribDivisorANGLE(colorLoc, 1);
+       
+        ext.drawArraysInstancedANGLE(
+          gl.TRIANGLES,
+          0,             // offset
+          numVertices,   // num vertices per instance
+          numInstances,  // num instances
+        );
+        requestAnimationFrame(render);
     }
-
-    // set attribute for color
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.enableVertexAttribArray(colorLoc);
-    gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
-    // this line says this attribute only changes for each 1 instance
-    ext.vertexAttribDivisorANGLE(colorLoc, 1);
-
-    ext.drawArraysInstancedANGLE(
-      gl.TRIANGLES,
-      0,             // offset
-      numVertices,   // num vertices per instance
-      numInstances,  // num instances
-    );
     requestAnimationFrame(render);
-}
-requestAnimationFrame(render);
 }
 
 main();
