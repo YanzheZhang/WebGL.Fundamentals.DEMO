@@ -89,7 +89,8 @@ function main() {
         // they are shared by all instances
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         gl.uniformMatrix4fv(projectionLoc, false,m4.orthographic(-aspect, aspect, -1, 1, -1, 1));
-        gl.uniformMatrix4fv(viewLoc, false, m4.zRotation(time * .1));
+        //gl.uniformMatrix4fv(viewLoc, false, m4.zRotation(time * .1));
+        gl.uniformMatrix4fv(viewLoc, false, m4.identity());//测试
 
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.enableVertexAttribArray(positionLoc);

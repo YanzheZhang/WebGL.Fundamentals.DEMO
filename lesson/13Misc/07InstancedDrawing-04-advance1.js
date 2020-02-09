@@ -122,7 +122,8 @@ function main() {
         // they are shared by all instances
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         gl.uniformMatrix4fv(projectionLoc, false,m4.orthographic(-aspect, aspect, -1, 1, -1, 1));
-        gl.uniformMatrix4fv(viewLoc, false, m4.zRotation(time * .1));
+        //gl.uniformMatrix4fv(viewLoc, false, m4.zRotation(time * .1));
+        gl.uniformMatrix4fv(viewLoc, false, m4.identity());//测试
 
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         gl.enableVertexAttribArray(positionLoc);
@@ -135,7 +136,7 @@ function main() {
         });
 
         //构造matrixData 
-        for (let ndx = 0; ndx < numInstances; ++ndx) {
+        for (let ndx = 0; ndx < numInstances; ndx++) {
             matrixDataV0[ndx*4]=matrixData[ndx*16+0];
             matrixDataV0[ndx*4+1]=matrixData[ndx*16+4];
             matrixDataV0[ndx*4+2]=matrixData[ndx*16+8];
@@ -148,10 +149,27 @@ function main() {
             matrixDataV2[ndx*4+1]=matrixData[ndx*16+6];
             matrixDataV2[ndx*4+2]=matrixData[ndx*16+10];
             matrixDataV2[ndx*4+3]=matrixData[ndx*16+14];
-            matrixDataV3[ndx*4]=matrixData[ndx*16+4];
+            matrixDataV3[ndx*4]=matrixData[ndx*16+3];
             matrixDataV3[ndx*4+1]=matrixData[ndx*16+7];
             matrixDataV3[ndx*4+2]=matrixData[ndx*16+11];
             matrixDataV3[ndx*4+3]=matrixData[ndx*16+15];
+
+            //matrixDataV0[ndx*4]=matrixData[ndx*16+0];
+            //matrixDataV0[ndx*4+1]=matrixData[ndx*16+1];
+            //matrixDataV0[ndx*4+2]=matrixData[ndx*16+2];
+            //matrixDataV0[ndx*4+3]=matrixData[ndx*16+3];
+            //matrixDataV1[ndx*4]=matrixData[ndx*16+4];
+            //matrixDataV1[ndx*4+1]=matrixData[ndx*16+5];
+            //matrixDataV1[ndx*4+2]=matrixData[ndx*16+6];
+            //matrixDataV1[ndx*4+3]=matrixData[ndx*16+7];
+            //matrixDataV2[ndx*4]=matrixData[ndx*16+8];
+            //matrixDataV2[ndx*4+1]=matrixData[ndx*16+9];
+            //matrixDataV2[ndx*4+2]=matrixData[ndx*16+10];
+            //matrixDataV2[ndx*4+3]=matrixData[ndx*16+11];
+            //matrixDataV3[ndx*4]=matrixData[ndx*16+12];
+            //matrixDataV3[ndx*4+1]=matrixData[ndx*16+13];
+            //matrixDataV3[ndx*4+2]=matrixData[ndx*16+14];
+            //matrixDataV3[ndx*4+3]=matrixData[ndx*16+15];
         }
 
         //// upload the new matrix data
