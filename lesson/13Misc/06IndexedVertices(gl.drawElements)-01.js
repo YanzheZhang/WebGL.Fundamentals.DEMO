@@ -19,11 +19,10 @@ function main() {
     var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
     var colorUniformLocation = gl.getUniformLocation(program, "u_color");
 
-    // Create a buffer to put three 2d clip space points in
-    var positionBuffer = gl.createBuffer();
-
-    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    //// Create a buffer to put three 2d clip space points in
+    //var positionBuffer = gl.createBuffer();
+    //// Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+    //gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);//ARRAY_BUFFER：提示是顶点类型
 
     webglUtils.resizeCanvasToDisplaySize(gl.canvas);
 
@@ -37,14 +36,13 @@ function main() {
     // Tell it to use our program (pair of shaders)
     gl.useProgram(program);
 
-    // Bind the position buffer.
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    //// Bind the position buffer.
+    //gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);//可省略
 
     // create the buffer
     const indexBuffer = gl.createBuffer();
-
     // make this buffer the current 'ELEMENT_ARRAY_BUFFER'
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);//ELEMENT_ARRAY_BUFFER:提示是索引类型
 
     // Fill the current element array buffer with data
     const indices = [
@@ -61,8 +59,22 @@ function main() {
     // --------------------------------
     // code below this line is rendering code
 
+
+    //放此处也可以 createBuffer与bindBuffer一起
+    // Create a buffer to put three 2d clip space points in
+    var positionBuffer = gl.createBuffer();
+    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);//ARRAY_BUFFER：提示是顶点类型
+
+
     // Turn on the attribute
     gl.enableVertexAttribArray(positionAttributeLocation);
+
+    ////放此可以 createBuffer与bindBuffer一起  必须在enableVertexAttribArray之前
+    //// Create a buffer to put three 2d clip space points in
+    //var positionBuffer = gl.createBuffer();
+    //// Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+    //gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);//ARRAY_BUFFER：提示是顶点类型
 
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
     var size = 2;          // 2 components per iteration
@@ -73,12 +85,21 @@ function main() {
     gl.vertexAttribPointer(
         positionAttributeLocation, size, type, normalize, stride, offset);
 
-    // bind the buffer containing the indices
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    //// bind the buffer containing the indices
+    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);//可省略
+
+
+    ////放此处不行 createBuffer与bindBuffer一起  必须在vertexAttribPointer之前
+    //// Create a buffer to put three 2d clip space points in
+    //var positionBuffer = gl.createBuffer();
+    //// Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
+    //gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);//ARRAY_BUFFER：提示是顶点类型
+
 
     // set the resolution
     gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
+    //gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);//不能单独放这里 必须createBuffer与bindBuffer一起
     // draw 50 random rectangles in random colors
     for (var ii = 0; ii < 50; ++ii) {
         // Setup a random rectangle
