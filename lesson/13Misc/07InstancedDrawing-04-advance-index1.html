@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>07InstancedDrawing-04-advance-index1</title>
+    <link href="./07InstancedDrawing-03.css" rel="stylesheet" />
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <!-- vertex shader -->
+    <script id="3d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 a_position;
+        attribute vec4 color;
+        attribute vec4 matrixV0;
+        attribute vec4 matrixV1;
+        attribute vec4 matrixV2;
+        attribute vec4 matrixV3;
+        uniform mat4 projection;
+        uniform mat4 view;
+
+        varying vec4 v_color;
+
+        void main() {
+        // Multiply the position by the matrix.
+       // gl_Position = matrix * a_position;
+
+        mat4 matrix = mat4(matrixV0.x, matrixV1.x, matrixV2.x, matrixV3.x, matrixV0.y, matrixV1.y, matrixV2.y, matrixV3.y, matrixV0.z, matrixV1.z, matrixV2.z, matrixV3.z, matrixV0.w, matrixV1.w, matrixV2.w, matrixV3.w);
+        gl_Position = projection * view * matrix * a_position;
+
+        // Pass the vertex color to the fragment shader.
+        v_color = color;
+        }
+    </script>
+    <!-- fragment shader -->
+    <script id="3d-fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+       // uniform vec4 color;
+        // Passed in from the vertex shader.
+        varying vec4 v_color;
+
+        void main() {
+        //gl_FragColor = color;
+        gl_FragColor = v_color;
+        }
+    </script>
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/m4.js"></script>
+    <script src="./07InstancedDrawing-04-advance-index1.js"></script>
+</body>
+</html>
