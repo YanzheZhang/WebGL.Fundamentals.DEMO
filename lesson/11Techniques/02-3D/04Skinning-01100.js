@@ -139,8 +139,9 @@ function main() {
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         m4.orthographic(-aspect * 10, aspect * 10, -10, 10, -1, 1, uniforms.projection);
 
-        var t = time * 0.001;
-        var angle = Math.sin(t) * 0.8;
+        //var t = time * 0.001;
+        var t = time * Math.PI / 180.0;
+        var angle = Math.sin(t) ;
         computeBoneMatrices(bones, angle);
 
         // multiply each by its bindPoseInverse
@@ -162,10 +163,10 @@ function main() {
 
         drawAxis(uniforms.projection, uniforms.view, bones);
 
-        requestAnimationFrame(render);
+        //requestAnimationFrame(render);
     }
-    requestAnimationFrame(render);
-
+    //requestAnimationFrame(render);
+    render(30.0);
 
     // --- ignore below this line - it's not relevant to the exmample and it's kind of a bad example ---
 

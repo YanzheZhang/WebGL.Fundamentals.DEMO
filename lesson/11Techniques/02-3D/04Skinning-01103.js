@@ -11,85 +11,72 @@ function main() {
 
     // compiles and links the shaders, looks up attribute and uniform locations
     var programInfo = webglUtils.createProgramInfo(gl, ["vs", "fs"]);
+ 
 
-    var arrays = {
-        position: {
-            numComponents: 2,
-            data: [
-             0, 1,  // 0
-             0, -1,  // 1
-             2, 1,  // 2
-             2, -1,  // 3
-             4, 1,  // 4
-             4, -1,  // 5
-             6, 1,  // 6
-             6, -1,  // 7
-             8, 1,  // 8
-             8, -1,  // 9
-            ],
-        },
-        //三个节点索引0-2
-        boneNdx: {
-            numComponents: 2,
-            data: [
-              0, 0,  // 0
-              0, 0,  // 1
-              0, 1,  // 2
-              0, 1,  // 3
-              1, 0,  // 4
-              1, 0,  // 5
-              1, 2,  // 6
-              1, 2,  // 7
-              2, 0,  // 8
-              2, 0,  // 9
-            ],
-        },
-        weight: {
-            numComponents: 2,
-            data: [
-             1, 0,  // 0
-             1, 0,  // 1
-            .5, .5, // 2
-            .5, .5, // 3
-             1, 0,  // 4
-             1, 0,  // 5
-            .5, .5, // 6
-            .5, .5, // 7
-             1, 0,  // 8
-             1, 0,  // 9
-            ],
-        },
+   var indices={
+       numComponents: 2,
+       data: [
+         0, 1,
+         0, 2,
+         1, 3,
+         2, 3, //
+         2, 4,
+         3, 5,
+         4, 5,
+         4, 6,
+         5, 7, //
+         6, 7,
+         6, 8,
+         7, 9,
+         8, 9,
+       ],
+    }
+    var position = [
+        [0, 1,0],
+        [0,-1,0],
+        [2, 1,0],
+        [2,-1,0],
+        [4, 1,0],
+        [4,-1,0],
+        [6, 1,0],
+        [6,-1,0],
+        [8, 1,0],
+        [8,-1,0],
+    ]
+    var boneNdx = [
+        [0, 0],
+        [0, 0],
+        [0, 1],
+        [0, 1],
+        [1, 0],
+        [1, 0],
+        [1, 2],
+        [1, 2],
+        [2, 0],
+        [2, 0],
+    ]
+    var weight = [
+       [ 1, 0],
+       [ 1, 0],
+       [.5, .5],
+       [.5, .5],
+       [ 1, 0],
+       [ 1, 0],
+       [.5, .5],
+       [.5, .5],
+       [ 1, 0],
+       [ 1, 0],
+    ]
 
-        indices: {
-            numComponents: 2,
-            data: [
-              0, 1,
-              0, 2,
-              1, 3,
-              2, 3, //
-              2, 4,
-              3, 5,
-              4, 5,
-              4, 6,
-              5, 7, //
-              6, 7,
-              6, 8,
-              7, 9,
-              8, 9,
-            ],
-        },
-    };
     // calls gl.createBuffer, gl.bindBuffer, gl.bufferData
-    var bufferInfo = webglUtils.createBufferInfoFromArrays(gl, arrays);
+    //var bufferInfo = webglUtils.createBufferInfoFromArrays(gl, arrays);
 
     // 3 matrices, one for each bone
     var numBones = 3;
-    var boneArray = new Float32Array(numBones * 16);
 
     var uniforms = {
         projection: m4.orthographic(-20, 20, -10, 10, -1, 1),
         view: m4.translation(-6, 0, 0),
-        bones: boneArray,
         color: [1, 0, 0, 1],
     };
 
@@ -103,7 +90,7 @@ function main() {
     var bones = [];         // 乘以绑定矩阵的逆之前的值 the value before multiplying by inverse bind matrix
     var bindPose = [];      // 绑定矩阵 the bind matrix
     for (var i = 0; i < numBones; ++i) {
-        boneMatrices.push(new Float32Array(boneArray.buffer, i * 4 * 16, 16));//使用同一内存，便于
+        boneMatrices.push(m4.identity());//测试
         bindPose.push(m4.identity());  // 仅仅分配存储空间 just allocate storage
         bones.push(m4.identity());     // just allocate storage
     }
@@ -128,10 +115,6 @@ function main() {
     var bindPoseInv = bindPose.map(function (m) {
         return m4.inverse(m);
     });
-    //var bindPoseInv = [];
-    //for (var i = 0; i < numBones; ++i) {
-    //    bindPoseInv.push(m4.identity()); 
-    //}
 
     function render(time) {
         webglUtils.resizeCanvasToDisplaySize(gl.canvas);
@@ -139,8 +122,9 @@ function main() {
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         m4.orthographic(-aspect * 10, aspect * 10, -10, 10, -1, 1, uniforms.projection);
 
-        var t = time * 0.001;
-        var angle = Math.sin(t) * 0.8;
+        //var t = time * 0.001;
+        let t = time*Math.PI / 180.0;
+        var angle = Math.sin(t);
         computeBoneMatrices(bones, angle);
 
         // multiply each by its bindPoseInverse
@@ -149,6 +133,35 @@ function main() {
         bones.forEach(function (bone, ndx) {
             m4.multiply(bone, bindPoseInv[ndx], boneMatrices[ndx]);
         });
+
+        var positionarr = [];
+        var index = 0;
+        //求positon
+        for (var i = 0; i < position.length; i++) {
+            var pos0 = m4.transformPoint(boneMatrices[boneNdx[i][0]], position[i]);
+            var pos1 = m4.transformPoint(boneMatrices[boneNdx[i][1]], position[i]);
+
+            pos0[0] = pos0[0] * weight[i][0];
+            pos1[0] = pos1[0] * weight[i][1];
+            pos0[1] = pos0[1] * weight[i][0];
+            pos1[1] = pos1[1] * weight[i][1];
+            pos0[2] = pos0[2] * weight[i][0];
+            pos1[2] = pos1[2] * weight[i][1];
+
+            positionarr[index++] = pos0[0] + pos1[0];
+            positionarr[index++] = pos0[1] + pos1[1];
+            positionarr[index++] = pos0[2] + pos1[2];
+        }
+
+        var arrays = {
+            position: 
+                {
+                    numComponents: 3,
+                    data: positionarr
+                },
+            indices: indices
+        }
+        var bufferInfo = webglUtils.createBufferInfoFromArrays(gl, arrays);
 
         gl.useProgram(programInfo.program);
         // calls gl.bindBuffer, gl.enableVertexAttribArray, gl.vertexAttribPointer
@@ -162,10 +175,10 @@ function main() {
 
         drawAxis(uniforms.projection, uniforms.view, bones);
 
-        requestAnimationFrame(render);
+        //requestAnimationFrame(render);
     }
-    requestAnimationFrame(render);
-
+    //requestAnimationFrame(render);
+    render(30.0);
 
     // --- ignore below this line - it's not relevant to the exmample and it's kind of a bad example ---
 
